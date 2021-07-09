@@ -15,9 +15,10 @@ module Mutations
       )
 
       if item.save
-        { item: item }
+        MartianLibrarySchema.subscriptions.trigger('itemAdded', {}, item)
+        { item: item, errors: nil }
       else
-        { errors: item.errors }
+        { item: nil, errors: item.errors }
       end
     end
   end

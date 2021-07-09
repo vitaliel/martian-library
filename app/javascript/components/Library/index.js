@@ -3,15 +3,16 @@ import { Query } from "react-apollo";
 
 import { LibraryQuery } from './operations.graphql';
 import UpdateItemForm from "../UpdateItemForm";
+import Subscription from '../Subscription';
 
 import cs from './styles';
 
-export default () => {
+const Library = () => {
   const [item, setItem] = useState(null);
 
   return (
     <Query query={LibraryQuery}>
-      {({ data, loading }) => (
+      {({ data, loading, subscribeToMore }) => (
         <div className={cs.library}>
           {loading || !data.items
             ? 'loading...'
@@ -29,17 +30,22 @@ export default () => {
                 ) : null}
               </button>
             ))}
+
           {item != null && (
             <UpdateItemForm
               id={item.id}
               initialTitle={item.title}
               initialDescription={item.description}
               initialImageUrl={item.imageUrl}
+              // TODO errors
               onClose={() => setItem(null)}
             />
           )}
+          <Subscription subscriptionToMore={subscribeToMore}/>
         </div>
       )}
     </Query>
   );
 };
+
+export default Library;

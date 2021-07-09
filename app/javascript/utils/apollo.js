@@ -4,8 +4,11 @@ import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from "apollo-cache-inmemory";
 // links
 import { HttpLink } from "apollo-link-http";
-import { onError } from "apollo-link-error";
 import { ApolloLink, Observable } from "apollo-link";
+import ActionCableLink from "graphql-ruby-client/subscriptions/ActionCableLink";
+import { onError } from "apollo-link-error";
+
+import { createConsumer } from "@rails/actioncable"
 
 export const createCache = () => {
   const cache = new InMemoryCache();
@@ -77,12 +80,35 @@ const createHttpLink = () => new HttpLink({
   credentials: 'include',
 });
 
+const getCableUrl = () => {
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.hostname;
+  const port = process.env.CABLE_PORT || '3000';
+  const authToken = localStorage.getItem('mlToken')
+  return `${protocol}//${host}:${port}/cable?token=${authToken}`;
+}
+
+const createActionCableLink = () => {
+  const cable = createConsumer(getCableUrl());
+  return new ActionCableLink({ cable });
+}
+
+const hasSubscriptionOperation = ({ query: { definitions } }) =>
+  definitions.some(
+    ({ kind, operation }) =>
+      kind === 'OperationDefinition' && operation === 'subscription'
+  );
+
 export const createClient = (cache, requestLink) => {
   return new ApolloClient({
     link: ApolloLink.from([
       createErrorLink(),
       createLinkWithToken(),
-      createHttpLink(),
+      ApolloLink.split(
+        hasSubscriptionOperation,
+        createActionCableLink(),
+        createHttpLink(),
+      )
     ]),
     cache
   })

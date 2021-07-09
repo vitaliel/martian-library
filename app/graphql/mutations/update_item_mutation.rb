@@ -12,9 +12,10 @@ module Mutations
       item = Item.find(id)
 
       if item.update(attributes.to_h)
-        { item: item }
+        MartianLibrarySchema.subscriptions.trigger('itemUpdated', {}, item)
+        { item: item, errors: nil }
       else
-        { errors: item.errors }
+        { item: nil, errors: item.errors }
       end
     end
   end

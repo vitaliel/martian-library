@@ -15,14 +15,21 @@ export const createCache = () => {
   return cache;
 }
 
-// getToken from meta tags
-const getToken = () =>
-  document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-const token = getToken();
+// getTokens from meta tags
+const getTokens = () => {
+  const tokens = {
+    'X-CSRF-Token': document
+      .querySelector('meta[name="csrf-token"]')
+      .getAttribute('content')
+  }
+  const authToken = localStorage.getItem('mlToken');
+  return authToken ? { ...tokens, Authorization: authToken } : tokens;
+}
+
 const setTokenForOperation = async operation =>
   operation.setContext({
     headers: {
-      'X-CSRF-Token': token,
+      ...getTokens()
     }
   });
 
@@ -51,7 +58,7 @@ const createLinkWithToken = () =>
 // log errors
 const logError = (error) => console.error(error);
 // create error link
-const createErrorLink = () => onError(({graphQLErrors, networkError, operation}) => {
+const createErrorLink = () => onError(({ graphQLErrors, networkError, operation }) => {
   if (graphQLErrors) {
     logError('GraphQL - Error', {
       errors: graphQLErrors,

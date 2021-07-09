@@ -1,5 +1,6 @@
 class Item < ApplicationRecord
   belongs_to :user
 
-  validates_presence_of :title
+  validates :title, presence: true
+  validates :description, length: {minimum: 10}, allow_blank: true
 end

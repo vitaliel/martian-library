@@ -7,10 +7,11 @@ import ProcessItemForm from "../ProcessItemForm";
 
 const AddItemForm = () => (
   <Mutation mutation={AddItemMutation}>
-    {(addItem, { loading }) => (
+    {(addItem, { loading, data }) => (
       <ProcessItemForm
         buttonText='Add Item'
         loading={loading}
+        errors={data && data.addItem.errors}
         onProcessItem={({ title, description, imageUrl }) =>
           addItem({
             variables: {

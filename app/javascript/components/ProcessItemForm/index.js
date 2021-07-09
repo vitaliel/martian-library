@@ -7,13 +7,19 @@ const ProcessItemForm = ({
                            initialImageUrl = "",
                            onProcessItem,
                            buttonText,
+                           errors,
                            loading
                          }) => {
-  const [title, setTitle]= useState(initialTitle);
-  const [description, setDescription]= useState(initialDescription);
-  const [imageUrl, setImageUrl]= useState(initialImageUrl);
+  const [title, setTitle] = useState(initialTitle);
+  const [description, setDescription] = useState(initialDescription);
+  const [imageUrl, setImageUrl] = useState(initialImageUrl);
   return (
     <div className={cs.form}>
+      {errors && (
+        <div className={cs.errors}>
+          <div className="error">{errors.fullMessages.join('; ')}</div>
+        </div>
+      )}
       <input
         type='text'
         placeholder='title'
@@ -38,7 +44,7 @@ const ProcessItemForm = ({
       {loading ? (
         "... Loading"
       ) : (
-        <button onClick={() => onProcessItem({title, description, imageUrl})} className={cs.button}>
+        <button onClick={() => onProcessItem({ title, description, imageUrl })} className={cs.button}>
           {buttonText}
         </button>
       )}

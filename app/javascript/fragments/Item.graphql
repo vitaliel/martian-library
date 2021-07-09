@@ -1,0 +1,6 @@
+fragment ItemFragment on Item {
+  id
+  title
+  description
+  imageUrl
+}

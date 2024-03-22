@@ -7,28 +7,26 @@ class MartianLibrarySchema < GraphQL::Schema
 
   # Union and Interface Resolution
   def self.resolve_type(abstract_type, obj, ctx)
-    # TODO: Implement this function
-    # to return the correct object type for `obj`
-    raise(GraphQL::RequiredImplementationMissingError)
+    type_class = "::Types::#{object.class}Type".safe_constantize
+
+    raise ArgumentError, "Cannot resolve type for class #{object.class.name}" unless type_class.present?
+
+    type_class
   end
 
   # Relay-style Object Identification:
 
   # Return a string UUID for `object`
   def self.id_from_object(object, type_definition, query_ctx)
-    # Here's a simple implementation which:
-    # - joins the type name & object.id
-    # - encodes it with base64:
-    # GraphQL::Schema::UniqueWithinType.encode(type_definition.name, object.id)
+    GraphQL::Schema::UniqueWithinType.encode(object.class.name, object.id)
   end
 
   # Given a string UUID, find the object
   def self.object_from_id(id, query_ctx)
-    # For example, to decode the UUIDs generated above:
-    # type_name, item_id = GraphQL::Schema::UniqueWithinType.decode(id)
-    #
-    # Then, based on `type_name` and `id`
-    # find an object in your application
-    # ...
+    return unless id.present?
+
+    record_class_name, record_id = GraphQL::Schema::UniqueWithinType.decode(id)
+    record_class = record_class_name.safe_constantize
+    record_class&.find_by id: record_id
   end
 end

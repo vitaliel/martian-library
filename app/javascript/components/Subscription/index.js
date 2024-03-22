@@ -1,21 +1,36 @@
 import React, { useEffect } from 'react';
-import { ItemSubscription } from './operations.graphql';
+import { ItemAddedSubscription, ItemUpdatedSubscription } from './operations.graphql';
 
 // import cs from './styles';
 
-const Subscription = ({ subscriptionToMore }) => {
+export const SubscriptionAdded = ({ subscriptionToMore }) => {
   useEffect(() => {
     return subscriptionToMore({
-      document: ItemSubscription,
+      document: ItemAddedSubscription,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev;
-        const { itemAdded, itemUpdated } = subscriptionData.data;
+        const { itemAdded } = subscriptionData.data;
 
         if (itemAdded) {
           const alreadyInList = prev.items.find(e => e.id === itemAdded.id)
           if (alreadyInList) return prev;
           return { ...prev, items: prev.items.concat([itemAdded]) };
         }
+
+        return prev;
+      }
+    })
+  }, []);
+  return null;
+};
+
+export const SubscriptionUpdated = ({ subscriptionToMore }) => {
+  useEffect(() => {
+    return subscriptionToMore({
+      document: ItemUpdatedSubscription,
+      updateQuery: (prev, { subscriptionData }) => {
+        if (!subscriptionData.data) return prev;
+        const { itemUpdated } = subscriptionData.data;
 
         if (itemUpdated) {
           return {
@@ -32,5 +47,3 @@ const Subscription = ({ subscriptionToMore }) => {
   }, []);
   return null;
 };
-
-export default Subscription;

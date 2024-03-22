@@ -3,7 +3,7 @@ import { Query } from "react-apollo";
 
 import { LibraryQuery } from './operations.graphql';
 import UpdateItemForm from "../UpdateItemForm";
-import Subscription from '../Subscription';
+import { SubscriptionAdded, SubscriptionUpdated } from '../Subscription';
 
 import cs from './styles';
 
@@ -41,7 +41,8 @@ const Library = () => {
               onClose={() => setItem(null)}
             />
           )}
-          <Subscription subscriptionToMore={subscribeToMore}/>
+          <SubscriptionAdded subscriptionToMore={subscribeToMore}/>
+          <SubscriptionUpdated subscriptionToMore={subscribeToMore}/>
         </div>
       )}
     </Query>

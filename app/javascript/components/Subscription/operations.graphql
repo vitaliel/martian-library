@@ -1,6 +1,6 @@
 #import '../../fragments/Item.graphql'
 
-subscription ItemSubscription {
+subscription ItemAddedSubscription {
   itemAdded {
     ... ItemFragment
     user {
@@ -8,7 +8,9 @@ subscription ItemSubscription {
       email
     }
   }
+}
 
+subscription ItemUpdatedSubscription {
   itemUpdated {
     ... ItemFragment
     user {

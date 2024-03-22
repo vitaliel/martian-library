@@ -1,4 +1,5 @@
 module Mutations
+  # https://github.com/rmosolgo/graphql-ruby/blob/master/guides/mutations/mutation_errors.md
   class AddItemMutation < Mutations::BaseMutation
     argument :attributes, Types::ItemAttributes, required: true
 
